@@ -1,0 +1,45 @@
+syntax = "proto3";
+option go_package = ".;rpcmsg";
+
+enum Type {
+  Invalid = 0;
+  Request = 1;
+  Response = 2;
+  Notify = 3;
+  C2S = 4; // ws客户端到后端服务器的消息
+  S2C = 5; // 推送到ws客户端
+}
+
+/*
+
+type Message struct {
+	MC  string `json:"mc"`  // main cmd 是属于那个服务类型 crash
+	SC  string `json:"SC"`  // sub cmd  在服务中使用那个方法去处理这条消息 bet
+	SID string    `json:"SID"` // Service ID 表示服务ID ((CID 与 SID 绑定)多个相同的服务时分发到指定的 服务器处理数据)
+	CID int    `json:"CID"` // connection ID 用户的连接ID (只有用户存在这个值)
+	Buf []byte `json:"Buf"` // content 消息内容
+}
+
+*/
+
+// RPC 消息结构
+message RPCMessage {
+  Type   Type = 1; // [required]
+  int32  MID  = 2; // msg ID 消息ID[用于c2s]
+  string HID  = 3; // handlerID 内部消息处理器ID
+  bytes  BUF  = 4; // buffer 数据
+  string SID  = 5; // sender ID 发送方ID [required]
+  string CID  = 6; // connection ID 客户端连接ID [客户端消息时]
+  int32  UID  = 7; // user ID
+  int32  SEQ  = 8; // 请求ID,回执需要
+  string RID  = 9; // 远程服务器ID
+  string Err  = 10; // error
+}
+
+message PushGroupMsg{
+  bytes data = 1;
+  repeated string member = 2;
+}
+
+
+
